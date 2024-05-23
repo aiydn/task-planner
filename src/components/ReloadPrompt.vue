@@ -14,50 +14,27 @@ async function close() {
 </script>
 
 <template>
-  <div
-    v-if="offlineReady || needRefresh"
-    class="pwa-toast"
-    role="alert"
-  >
-    <div class="message">
-      <span v-if="offlineReady">
-        App ready to work offline
-      </span>
-      <span v-else>
-        New content available, click on reload button to update.
-      </span>
+  <div v-if="offlineReady || needRefresh" class="toast toast-end ">
+    <div v-if="offlineReady" role="alert" class="alert ">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>Klaar voor offline gebruik</span>
+      <div>
+        <button @click="close" class="btn btn-sm btn-primary">Sluiten</button>
+      </div>
     </div>
-    <button v-if="needRefresh" @click="updateServiceWorker()">
-      Reload
-    </button>
-    <button @click="close">
-      Close
-    </button>
+    <div v-if="needRefresh" role="alert" class="alert ">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span>Update Beschikbaar</span>
+      <div>
+        <button @click="close" class="btn btn-sm">Negeren</button>
+        <button @click="updateServiceWorker()" class="btn btn-sm btn-primary">Opniew laden</button>
+      </div>
+    </div>
   </div>
 </template>
-
-<style>
-.pwa-toast {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  margin: 16px;
-  padding: 12px;
-  border: 1px solid #8885;
-  border-radius: 4px;
-  z-index: 1;
-  text-align: left;
-  box-shadow: 3px 4px 5px 0 #8885;
-  background-color: white;
-}
-.pwa-toast .message {
-  margin-bottom: 8px;
-}
-.pwa-toast button {
-  border: 1px solid #8885;
-  outline: none;
-  margin-right: 5px;
-  border-radius: 2px;
-  padding: 3px 10px;
-}
-</style>
