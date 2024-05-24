@@ -9,6 +9,10 @@ let dagen = props.input.dagen;
 let bewoners = props.input.bewoners;
 const lijst = ref(props.input.lijst)
 const show = ref("opties")
+window.onbeforeunload = function(){
+  if (lastSave !== getSave()){
+  return 'Wijzigingen zijn *niet* opgeslagen!';}
+};
 
 function getNumberOfWeek() {
   const today = new Date();
@@ -109,12 +113,13 @@ function getAll(list, option) {
   for (let i = 0; i < list.length; i++) { temp.push(getArray(list[i])[option]) }
   return temp
 }
-
-function saveToFile(JsonExport) {
+function saveToFile() {
+  if (lastSave !== getSave()) {
+    lastSave = getSave()
   let temp = new Date()
 
   const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
-  const jsonStr = JSON.stringify(JsonExport);
+  const jsonStr = JSON.stringify(getSave());
 
   let element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
@@ -126,6 +131,8 @@ function saveToFile(JsonExport) {
   element.click();
 
   document.body.removeChild(element);
+}
+else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
 }
 
 
@@ -217,6 +224,13 @@ function fixSetup(){
 const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.taken))
 if (onlyChecked(listAll(true, true, true)).length == 0) { toggleAll(listAll(true, true, true), true) }
 fixSetup()
+function getSave(){return JSON.stringify({
+      taken: taken,
+      dagen: dagen,
+      bewoners: bewoners,
+      lijst: lijst._rawValue
+    })}
+let lastSave = getSave()
 
 </script>
 
@@ -227,12 +241,7 @@ fixSetup()
       <option value="opties">Taken Opties</option>
       <option value="planner">Taken Lijst</option>
     </select>
-    <button @click="saveToFile({
-      taken: taken,
-      dagen: dagen,
-      bewoners: bewoners,
-      lijst: lijst
-    })" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer opties</button>
+    <button @click="saveToFile()" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer opties</button>
     <button v-if="show == 'planner'" onclick="window.print()"
       class="btn no-animation join-item select-bordered ">Printen</button>
   </div>
