@@ -105,7 +105,7 @@ var fileName = new Date().toLocaleDateString()
             <span class="label-text ">Upload een bestand</span>
           </div>
           <input @change="load($refs.fileInput.files)" ref="fileInput" accept=".json" type="file"
-            class="file-input border-2	border-neutral w-full" />
+            class="file-input border-2 border-base-200 dark:border-neutral w-full" />
         </label>
         <div class="divider divider-horizontal"></div>
         <label class="form-control w-1/2">

@@ -18,6 +18,8 @@ export default {
         light: {
           ...require("daisyui/src/theming/themes")["light"],
           "base-content": "#000000",
+          "neutral": "#F2F2F2",
+          "neutral-content": "#000000"
         },
         dark : {
           ...require("daisyui/src/theming/themes")["dark"],
@@ -25,9 +27,7 @@ export default {
           "base-200": "#1f1f1f",
           "base-300": "#1a1a1a",
           "base-content": "#ffffff",
-          "neutral": "#1F1F1F"
-
-        },
+          "neutral": "#1F1F1F"        },
       },
     ],
   },
