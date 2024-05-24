@@ -119,7 +119,7 @@ function saveToFile() {
   let temp = new Date()
 
   const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
-  const jsonStr = JSON.stringify(getSave());
+  const jsonStr = getSave();
 
   let element = document.createElement('a');
   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
