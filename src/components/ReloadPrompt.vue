@@ -14,7 +14,7 @@ async function close() {
 </script>
 
 <template>
-  <div v-if="offlineReady || needRefresh" class="toast toast-top toast-center ">
+  <div v-if="offlineReady || needRefresh" class="z-50 toast toast-top toast-center ">
     <div v-if="offlineReady" role="alert" class="alert ">
       <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
