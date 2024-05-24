@@ -77,7 +77,7 @@ function checkForDropdown(list) {
   let temp1 = []
   for (let i = 0; i < list.length; i++) {
     let temp = getArray(list[i])
-    if (dagTaakDropdown.value[temp.dag + '$' + temp.taak] == false) {temp1.push(list[i])}
+    if (dagTaakDropdown.value[temp.dag + '$' + temp.taak] == false) { temp1.push(list[i]) }
   }
   return temp1
 }
@@ -110,13 +110,6 @@ function getAll(list, option) {
   return temp
 }
 
-
-function taakFalse(dag, taak) {
-  let temp
-  if (lijst.value.niet['niet$' + dag + '$' + taak]) { temp = true }
-  else { temp = false }
-  return temp
-}
 function saveToFile(JsonExport) {
   let temp = new Date()
 
@@ -195,15 +188,8 @@ function randomForWeek() {
 }
 
 function SelectByDropdownRun(day, task) {
-  console.log(dagTaakDropdown.value[day+ '$' + task])
-  console.log(listAll(  dagTaakDropdown.value[day+ '$' + task], day, task))
-  // if (temp !== false) {
-    { toggleAll(listAll(  true, day, task), false) }
-    { toggleAll(listAll(  dagTaakDropdown.value[day+ '$' + task], day, task), true) }
-  // }
-  // if (temp == 'false') {
-  //   // let temp = dagTaakDropdown[dagen[dag] + '$' + taak]
-  // }
+  toggleAll(listAll(true, day, task), false)
+  toggleAll(listAll(dagTaakDropdown.value[day + '$' + task], day, task), true)
 }
 
 function maakDagTaakDropdDown(dagen, taken){
@@ -213,17 +199,31 @@ function maakDagTaakDropdDown(dagen, taken){
         temp[dagen[dag] + '$' + taken[taak]] = false
     }
   }
-  console.log(temp)
   return temp
 }
 
+
+function fixSetup(){
+  for (let dag = 0; dag < dagen.length; dag++) {
+    for (let taak = 0; taak < taken.length; taak++) {
+      if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
+        if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
+        dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+      }
+    }
+  }
+}
+}
 const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.taken))
+if (onlyChecked(listAll(true, true, true)).length == 0) { toggleAll(listAll(true, true, true), true) }
+fixSetup()
 
 </script>
 
 <template>
   <div class="fixed bottom-5 left-5 w-full max-w-fit z-50 print:hidden join">
-    <select class="text-balance max-w-36 print:max-w-full line-clamp-2 text-xs join-item select select-bordered " v-model="show">
+    <select class="text-balance max-w-36 print:max-w-full line-clamp-2 text-xs join-item select select-bordered "
+      v-model="show">
       <option value="opties">Taken Opties</option>
       <option value="planner">Taken Lijst</option>
     </select>
@@ -232,8 +232,9 @@ const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.
       dagen: dagen,
       bewoners: bewoners,
       lijst: lijst
-    })" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Export settings</button>
-    <button v-if="show == 'planner'" onclick="window.print()" class="btn no-animation join-item select-bordered ">Print</button>
+    })" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer opties</button>
+    <button v-if="show == 'planner'" onclick="window.print()"
+      class="btn no-animation join-item select-bordered ">Printen</button>
   </div>
 
 
@@ -261,15 +262,15 @@ const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.
               <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false" v-model="dagTaakDropdown[dag + '$' + taak]"
                 @change="SelectByDropdownRun(dag, taak)" class="select select-primary w-full select-xs ">
                 <option :value=false>Meerdere keuzes</option>
-                <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{bewoner.replace(/_/g, ' ')}}</option>
+                <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
               </select>
               <select disabled v-if="lijst.niet['niet$' + dag + '$' + taak] == true"
                 v-model="dagTaakDropdown[dag + '$' + taak]" @change="SelectByDropdownRun(dag, taak)"
                 class="select select-primary w-full select-xs ">
                 <option :value=false>Meerdere keuzes</option>
-                <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{bewoner.replace(/_/g, ' ')}}</option>
+                <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
               </select>
-              <div v-if="onlyChecked(listAll(true, dag, taak)).length !==1 ||dagTaakDropdown[dag + '$' + taak] == false"
+              <div v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                 class="columns-2 ">
                 <fieldset v-for="bewoner in bewoners">
                   <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
@@ -283,15 +284,17 @@ const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.
                 </fieldset>
               </div>
               <div
-                v-if="onlyChecked(listAll(true, dag, taak)).length !==1 || dagTaakDropdown[dag + '$' + taak] == false"
+                v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                 class="join grid grid-cols-2">
                 <button
                   v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
-                  @click="toggleAll(listAll(true, dag, taak), true)" class="btn no-animation join-item btn-xs">Iedereen</button>
+                  @click="toggleAll(listAll(true, dag, taak), true)"
+                  class="btn no-animation join-item btn-xs">Iedereen</button>
                 <button v-else disabled class="btn no-animation join-item btn-xs">Iedereen</button>
                 <button
                   v-if="(onlyChecked(listAll(true, dag, taak)).length > 0) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
-                  @click="toggleAll(listAll(true, dag, taak), false)" class="btn no-animation join-item btn-xs">Niemand</button>
+                  @click="toggleAll(listAll(true, dag, taak), false)"
+                  class="btn no-animation join-item btn-xs">Niemand</button>
                 <button v-else disabled class="btn no-animation join-item btn-xs">Niemand</button>
               </div>
               <div class="join grid grid-cols-1">
@@ -333,9 +336,8 @@ const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.
       </div>
       <div class="flex justify-end join">
         <div class="w-full join-item ">
-          <button class="btn no-animation w-full join-item select-bordered "
-            @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
-">Aanvinken</button>
+          <button class="btn no-animation w-full join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
+          ">Aanvinken</button>
         </div>
         <div class="w-full">
           <button class="btn no-animation w-full join-item select-bordered "

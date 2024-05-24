@@ -57,8 +57,6 @@ function finishEdit() {
   input.value.bewoners = Object.assign([], (input.value.bewoners.replace(/ /g, "_").split('\n')));
   input.value.lijst = updateLijst(input.value.lijst, maakLijst(input.value.bewoners, input.value.dagen, input.value.taken));
   input.value.lijst.niet = updateLijst(input.value.lijst.niet, maakLijst(input.value.bewoners, input.value.dagen, input.value.taken).niet)
-
-  console.log(input)
   show.value = true;
 }
 const input = ref({
@@ -96,14 +94,28 @@ var fileName = new Date().toLocaleDateString()
 </script>
 
 <template>
-  <reloadPrompt/>
+  <reloadPrompt />
   <div v-if="!show" class="flex h-screen">
-    <div v-if="!inputEdit" class="m-auto">
-      <h1 class="text-2xl">Taken Rooster Planner</h1>
-      <input ref="fileInput" accept=".json" @change="load($refs.fileInput.files)" type="file"
-        class="file-input file-input-bordered w-full max-w-xs" />
-      <div class="divider">OR</div>
-      <button v-if="!show" class="btn w-full max-w-xs" @click="goToEdit()">VOORBEELD DATA</button>
+    <div v-if="!inputEdit" class="m-auto w-2/3">
+      <h1 class="text-3xl text-center">Taken Rooster Planner</h1>
+      <div class="divider"></div>
+      <div class="flex w-full">
+        <label class="form-control w-1/2">
+          <div class="label">
+            <span class="label-text ">Upload een bestand</span>
+          </div>
+          <input @change="load($refs.fileInput.files)" ref="fileInput" accept=".json" type="file"
+            class="file-input file-input-bordered w-full" />
+        </label>
+        <div class="divider divider-horizontal"></div>
+        <label class="form-control w-1/2">
+          <div class="label">
+            <span class="label-text">Maak een nieuw bestand</span>
+          </div>
+          <button class="btn no-animation  " @click="goToEdit()">Nieuw bestand</button>
+        </label>
+      </div>
+
     </div>
     <div v-if="inputEdit" class="grow flex flex-col">
       <div class="h-5/6 w-11/12 grid grid-cols-3 gap-4 mx-auto">
@@ -127,7 +139,7 @@ var fileName = new Date().toLocaleDateString()
         </label>
       </div>
       <div class="flex w-screen">
-        <button v-if="!show" class="btn w-11/12	mx-auto my-4" @click="finishEdit()">GO</button>
+        <button v-if="!show" class="btn no-animation w-11/12	mx-auto my-4" @click="finishEdit()">Doorgaan</button>
       </div>
     </div>
   </div>
