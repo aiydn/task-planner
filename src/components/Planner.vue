@@ -238,7 +238,7 @@ let lastSave = getSave()
 </script>
 
 <template>
-  <div class="fixed bottom-5 left-5 w-full max-w-fit z-50 print:hidden join">
+  <div class="fixed bottom-1 left-1 w-full max-w-fit z-50 print:hidden join">
     <select class="text-balance max-w-36 print:max-w-full line-clamp-2 text-xs join-item select select-bordered "
       v-model="show">
       <option value="opties">Taken Opties</option>
@@ -324,7 +324,7 @@ let lastSave = getSave()
         </tr>
       </tbody>
     </table>
-    <div class="fixed  bottom-5 right-5  ">
+    <div class="fixed  bottom-1 right-1  ">
       <div class="flex justify-end join		">
         <div class="shrink join-item">
           <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered "
