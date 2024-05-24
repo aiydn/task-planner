@@ -9,9 +9,10 @@ let dagen = props.input.dagen;
 let bewoners = props.input.bewoners;
 const lijst = ref(props.input.lijst)
 const show = ref("opties")
-window.onbeforeunload = function(){
-  if (lastSave !== getSave()){
-  return 'Wijzigingen zijn *niet* opgeslagen!';}
+window.onbeforeunload = function () {
+  if (lastSave !== getSave()) {
+    return 'Wijzigingen zijn *niet* opgeslagen!';
+  }
 };
 
 function getNumberOfWeek() {
@@ -116,23 +117,23 @@ function getAll(list, option) {
 function saveToFile() {
   if (lastSave !== getSave()) {
     lastSave = getSave()
-  let temp = new Date()
+    let temp = new Date()
 
-  const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
-  const jsonStr = getSave();
+    const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
+    const jsonStr = getSave();
 
-  let element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
-  element.setAttribute('download', filename);
+    let element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+    element.setAttribute('download', filename);
 
-  element.style.display = 'none';
-  document.body.appendChild(element);
+    element.style.display = 'none';
+    document.body.appendChild(element);
 
-  element.click();
+    element.click();
 
-  document.body.removeChild(element);
-}
-else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
+    document.body.removeChild(element);
+  }
+  else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
 }
 
 
@@ -199,37 +200,39 @@ function SelectByDropdownRun(day, task) {
   toggleAll(listAll(dagTaakDropdown.value[day + '$' + task], day, task), true)
 }
 
-function maakDagTaakDropdDown(dagen, taken){
+function maakDagTaakDropdDown(dagen, taken) {
   let temp = {}
   for (let dag = 0; dag < dagen.length; dag++) {
     for (let taak = 0; taak < taken.length; taak++) {
-        temp[dagen[dag] + '$' + taken[taak]] = false
+      temp[dagen[dag] + '$' + taken[taak]] = false
     }
   }
   return temp
 }
 
 
-function fixSetup(){
+function fixSetup() {
   for (let dag = 0; dag < dagen.length; dag++) {
     for (let taak = 0; taak < taken.length; taak++) {
       if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
         if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
-        dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+          dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+        }
       }
     }
   }
 }
-}
 const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.taken))
 if (onlyChecked(listAll(true, true, true)).length == 0) { toggleAll(listAll(true, true, true), true) }
 fixSetup()
-function getSave(){return JSON.stringify({
-      taken: taken,
-      dagen: dagen,
-      bewoners: bewoners,
-      lijst: lijst._rawValue
-    })}
+function getSave() {
+  return JSON.stringify({
+    taken: taken,
+    dagen: dagen,
+    bewoners: bewoners,
+    lijst: lijst._rawValue
+  })
+}
 let lastSave = getSave()
 
 </script>
@@ -241,7 +244,8 @@ let lastSave = getSave()
       <option value="opties">Taken Opties</option>
       <option value="planner">Taken Lijst</option>
     </select>
-    <button @click="saveToFile()" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer opties</button>
+    <button @click="saveToFile()" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer
+      opties</button>
     <button v-if="show == 'planner'" onclick="window.print()"
       class="btn no-animation join-item select-bordered ">Printen</button>
   </div>
@@ -252,7 +256,7 @@ let lastSave = getSave()
       <thead>
         <tr>
           <th class="border border-content dark:border-neutral print:border-black print:border-2	"><select
-              class="select select-bordered select-xs" v-model="dropdown.week">
+              class="select select-bordered  select-xs" v-model="dropdown.week">
               <option v-for="week in generateWeeknumbers()" :value=week>{{ week }}</option>
             </select></th>
           <th v-for="dag in dagen"
@@ -269,7 +273,7 @@ let lastSave = getSave()
           <td v-for="dag in dagen" class="border border-content dark:border-neutral print:border-black print:border-2	">
             <div class="w-full space-y-1">
               <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false" v-model="dagTaakDropdown[dag + '$' + taak]"
-                @change="SelectByDropdownRun(dag, taak)" class="select select-primary w-full select-xs ">
+                @change="SelectByDropdownRun(dag, taak)" class="select select-primary w-full select-xs">
                 <option :value=false>Meerdere keuzes</option>
                 <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
               </select>
@@ -279,7 +283,8 @@ let lastSave = getSave()
                 <option :value=false>Meerdere keuzes</option>
                 <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
               </select>
-              <div v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
+              <div
+                v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                 class="columns-2 ">
                 <fieldset v-for="bewoner in bewoners">
                   <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
@@ -319,7 +324,7 @@ let lastSave = getSave()
         </tr>
       </tbody>
     </table>
-    <div class="fixed select-primary bottom-5 right-5  ">
+    <div class="fixed  bottom-5 right-5  ">
       <div class="flex justify-end join		">
         <div class="shrink join-item">
           <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered "
@@ -373,7 +378,7 @@ let lastSave = getSave()
       <thead>
         <tr>
           <th class="border border-content dark:border-neutral print:border-black print:border-2	 ">
-            <select class="select select-bordered select-xs print:hidden" v-model="dropdown.week">
+            <select class="select select-bordered  select-xs print:hidden" v-model="dropdown.week">
               <option v-for="week in generateWeeknumbers()" :value=week>{{ week }} </option>
             </select>
             <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>

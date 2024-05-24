@@ -105,20 +105,20 @@ var fileName = new Date().toLocaleDateString()
             <span class="label-text ">Upload een bestand</span>
           </div>
           <input @change="load($refs.fileInput.files)" ref="fileInput" accept=".json" type="file"
-            class="file-input file-input-bordered w-full" />
+            class="file-input border-2	border-neutral w-full" />
         </label>
         <div class="divider divider-horizontal"></div>
         <label class="form-control w-1/2">
           <div class="label">
             <span class="label-text">Maak een nieuw bestand</span>
           </div>
-          <button class="btn no-animation  " @click="goToEdit()">Nieuw bestand</button>
+          <button class="btn border-2	border-neutra no-animation  " @click="goToEdit()">Nieuw bestand</button>
         </label>
       </div>
 
     </div>
     <div v-if="inputEdit" class="grow flex flex-col">
-      <div class="h-5/6 w-11/12 grid grid-cols-3 gap-4 mx-auto">
+      <div class="grow w-11/12 grid grid-cols-3 gap-4 mx-auto">
         <label class="form-control">
           <div class="label">
             <span class="label-text">Bewoners</span>
