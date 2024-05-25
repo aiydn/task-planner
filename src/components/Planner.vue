@@ -244,10 +244,10 @@ let lastSave = getSave()
       <option value="opties">Taken Opties</option>
       <option value="planner">Taken Lijst</option>
     </select>
-    <button @click="saveToFile()" v-if="show == 'opties'" class="btn no-animation join-item select-bordered ">Exporteer
+    <button @click="saveToFile()" v-if="show == 'opties'" class="btn btn-neutral no-animation join-item select-bordered ">Exporteer
       opties</button>
     <button v-if="show == 'planner'" onclick="window.print()"
-      class="btn no-animation join-item select-bordered ">Printen</button>
+      class="btn btn-neutral no-animation join-item select-bordered ">Printen</button>
   </div>
 
 
@@ -303,21 +303,21 @@ let lastSave = getSave()
                 <button
                   v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
                   @click="toggleAll(listAll(true, dag, taak), true)"
-                  class="btn no-animation join-item btn-xs">Iedereen</button>
-                <button v-else disabled class="btn no-animation join-item btn-xs">Iedereen</button>
+                  class="btn btn-neutral no-animation join-item btn-xs">Iedereen</button>
+                <button v-else disabled class="cursor-not-allowed	btn btn-neutral no-animation join-item btn-xs ">Iedereen</button>
                 <button
                   v-if="(onlyChecked(listAll(true, dag, taak)).length > 0) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
                   @click="toggleAll(listAll(true, dag, taak), false)"
-                  class="btn no-animation join-item btn-xs">Niemand</button>
-                <button v-else disabled class="btn no-animation join-item btn-xs">Niemand</button>
+                  class="btn btn-neutral no-animation join-item btn-xs	">Niemand</button>
+                <button v-else disabled class="cursor-not-allowed btn btn-neutral no-animation join-item btn-xs 		">Niemand</button>
               </div>
               <div class="join grid grid-cols-1">
                 <button v-if="lijst.niet['niet$' + dag + '$' + taak] == false" @click="blokeren(dag, taak, true)"
-                  class="btn no-animation join-item btn-xs">Taak uitzetten</button>
-                <!-- <button v-else disabled class="btn no-animation join-item btn-xs">Blokeren</button> -->
+                  class="btn btn-neutral no-animation join-item btn-xs">Taak uitzetten</button>
+                <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Blokeren</button> -->
                 <button v-if="lijst.niet['niet$' + dag + '$' + taak] == true" @click="blokeren(dag, taak, false)"
-                  class="btn no-animation join-item btn-xs">Taak aanzetten</button>
-                <!-- <button v-else disabled class="btn no-animation join-item btn-xs">Deblokeren</button> -->
+                  class="btn btn-neutral no-animation join-item btn-xs">Taak aanzetten</button>
+                <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Deblokeren</button> -->
               </div>
             </div>
           </td>
@@ -350,11 +350,11 @@ let lastSave = getSave()
       </div>
       <div class="flex justify-end join">
         <div class="w-full join-item ">
-          <button class="btn no-animation w-full join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
+          <button class="btn btn-neutral no-animation w-full join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
           ">Aanvinken</button>
         </div>
         <div class="w-full">
-          <button class="btn no-animation w-full join-item select-bordered "
+          <button class="btn btn-neutral no-animation w-full join-item select-bordered "
             @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), false)">Uitvinken</button>
         </div>
       </div>
@@ -362,7 +362,7 @@ let lastSave = getSave()
   </div>
   <div v-if="show == 'planner'" class="overflow-x-auto">
     <div class="print:hidden fixed bottom-5 right-5 w-full max-w-fit z-50 ">
-      <button @click="randomForWeek()" class="btn no-animation btn-outline btn-xl btn-circle">
+      <button @click="randomForWeek()" class="btn btn-neutral no-animation btn-outline btn-xl btn-circle">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-max w-max" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
           <g id="SVGRepo_bgCarrier" stroke-width="0" />
@@ -386,7 +386,7 @@ let lastSave = getSave()
           <th
             class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 "
             v-for="dag in dagen"> {{ dag.replace(/_/g, ' ') }} <button @click="randomForDay(dag)"
-              class="btn no-animation btn-xs btn-circle btn-outline print:hidden">
+              class="btn btn-neutral no-animation btn-xs btn-circle btn-outline print:hidden">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <g id="SVGRepo_bgCarrier" stroke-width="0" />

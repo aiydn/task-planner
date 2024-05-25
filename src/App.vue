@@ -105,14 +105,14 @@ var fileName = new Date().toLocaleDateString()
             <span class="label-text ">Upload een bestand</span>
           </div>
           <input @change="load($refs.fileInput.files)" ref="fileInput" accept=".json" type="file"
-            class="file-input border-2 border-base-200 dark:border-neutral w-full" />
+            class="file-input border-2 border-neutral w-full" />
         </label>
         <div class="divider divider-horizontal"></div>
         <label class="form-control w-1/2">
           <div class="label">
             <span class="label-text">Maak een nieuw bestand</span>
           </div>
-          <button class="btn border-2	border-neutra no-animation  " @click="goToEdit()">Nieuw bestand</button>
+          <button class="btn btn-neutral border-2 border-neutral no-animation  " @click="goToEdit()">Nieuw bestand</button>
         </label>
       </div>
 
@@ -139,7 +139,7 @@ var fileName = new Date().toLocaleDateString()
         </label>
       </div>
       <div class="flex w-screen">
-        <button v-if="!show" class="btn no-animation w-11/12	mx-auto my-4" @click="finishEdit()">Doorgaan</button>
+        <button v-if="!show" class="btn btn-neutral no-animation w-11/12	mx-auto my-4" @click="finishEdit()">Doorgaan</button>
       </div>
     </div>
   </div>
