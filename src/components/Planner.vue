@@ -1,5 +1,6 @@
 <script setup>
-
+import { defineComponent } from "vue";
+import WordHighlighter from "vue-word-highlighter";
 import { ref } from 'vue';
 var props = defineProps({
   input: Object
@@ -14,6 +15,7 @@ window.onbeforeunload = function () {
     return 'Wijzigingen zijn *niet* opgeslagen!';
   }
 };
+
 
 function getNumberOfWeek() {
   const today = new Date();
@@ -41,7 +43,8 @@ function listAll(a, b, c) {
   let A = [] //bewoners
   let B = [] //dagen
   let C = [] //taken
-  if (a == true | a == 'true') { A = bewoners }
+  if (a == true) { A = bewoners }
+  else if (a == 'realtrue') { A[1] = 'true' }
   else if (Array.isArray(a)) { A = a }
   else { A[0] = a }
   if (b == true | b == 'true') { B = dagen }
@@ -108,6 +111,14 @@ function getArray(id) {
   }
 }
 
+function getName(id) {
+  let temp = []
+  for (let i = 0; i < id.length; i++) {
+    temp.push(choise.value[id[i]])
+  }
+  return temp
+}
+
 
 function getAll(list, option) {
   let temp = []
@@ -136,13 +147,13 @@ function saveToFile() {
   else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
 }
 
-
+const search = ref();
 
 function chosenOneLijst(bewoners, dagen, taken) {
   let temp = {}
   for (let dag = 0; dag < dagen.length; dag++) {
     for (let taak = 0; taak < taken.length; taak++) {
-      temp[bewoners + '$' + dagen[dag] + '$' + taken[taak]] = undefined
+      temp[true + '$' + dagen[dag] + '$' + taken[taak]] = undefined
     }
   }
   return temp
@@ -189,51 +200,150 @@ function randomForDay(dag) {
     randomForDay(dag)
   }
 }
+
+
+function randomForTask(taak) {
+  let dagenLijst = []
+  for (let dag = 0; dag < dagen.length; dag++) {
+    let temp = getAll(onlyChecked(listAll(true, dagen[dag], taak)), 'dag').length
+    dagenLijst.push({ dagen: dagen[dag], size: temp })
+  };
+
+  dagenLijst.sort(function (a, b) { if (a.size == b.size) { return 0.5 - Math.random() } else { return a.size - b.size } }); //random
+  let byName = new Map();
+  let byday = new Map();
+  let randomVoortaak = {};
+  for (let dag = 0; dag < dagenLijst.length; dag++) {
+    randomVoortaak[dagenLijst[dag].dagen] = getAll(onlyChecked(listAll(true, dagenLijst[dag].dagen, taak)), 'bewoner').sort(function () { return 0.5 - Math.random() });
+  }
+  for (let dag = 0; dag < dagenLijst.length; dag++) {
+    let name = randomVoortaak[dagenLijst[dag].dagen];
+    let day = dagenLijst[dag].dagen;
+    let i = 0;
+    for (i = 0; i <= byday.size; i++) {
+      if (!byday.has(day) && !byName.has(name[i])) { break }
+    }
+    byName.set(name[i], day)
+    byday.set(day, name[i])
+  }
+  let max = [...new Set(getAll(onlyChecked(listAll(true, true, taak)), "bewoner"))].length
+  let max2 = [...new Set(getAll(onlyChecked(listAll(true, true, taak)), "dagen"))].length
+
+  for (let dag = 0; dag < dagen.length; dag++) {
+    let temp = byday.get(dagen[dag])
+    if (temp !== undefined) { temp = temp.replace(/_/g, ' ') }
+    choise.value['true' + '$' + dagen[dag] + '$' + taak] = temp
+  }
+  let disabledLength = onlyChecked(listAll('niet', true, taak)).length
+  if (byName.has(undefined)) { byName.delete(undefined) }
+  let newmax = Math.min(max, max2, dagen.length - disabledLength)
+  if (newmax > byName.size) {
+    console.log(taak + ":gefaald")
+    randomForDay(taak)
+  }
+}
 function randomForWeek() {
   for (let dag = 0; dag < dagen.length; dag++) {
     randomForDay(dagen[dag])
   }
+  fix()
 }
 
-function SelectByDropdownRun(day, task) {
-  toggleAll(listAll(true, day, task), false)
-  toggleAll(listAll(dagTaakDropdown.value[day + '$' + task], day, task), true)
-}
 
-function maakDagTaakDropdDown(dagen, taken) {
-  let temp = {}
-  for (let dag = 0; dag < dagen.length; dag++) {
+function fix() {
+  for (let taak = 0; taak < taken.length; taak++) {
+    let temp = {
+      Maandag: hasDuplicates(getName(listAll('true', 'Maandag', taken[taak]))),
+      Dinsdag: hasDuplicates(getName(listAll('true', 'Dinsdag', taken[taak]))),
+      Woendag: hasDuplicates(getName(listAll('true', 'Woensdag', taken[taak]))),
+      Donderdag: hasDuplicates(getName(listAll('true', 'Donderdag', taken[taak]))),
+      Vrijdag: hasDuplicates(getName(listAll('true', 'Vrijdag', taken[taak]))),
+      Zaterdag: hasDuplicates(getName(listAll('true', 'Zaterdag', taken[taak]))),
+    }
+    let needCheck = false
+    for (const [key, value] of Object.entries(temp)) {
+      if (value == true){random(randomForDay(key));  needCheck = true
+  }
+
+if (needCheck == true) {fix()}
+}
+  }}
+
+
+  function hasDuplicates(array) {
+    return (new Set(array)).size !== array.length;
+  }
+
+  function randomForWeek2() {
     for (let taak = 0; taak < taken.length; taak++) {
-      temp[dagen[dag] + '$' + taken[taak]] = false
+      randomForTask(taken[taak])
     }
   }
-  return temp
-}
 
-
-function fixSetup() {
-  for (let dag = 0; dag < dagen.length; dag++) {
+  function fixRandomGenAfterDays() {
+    let needCheck = false
     for (let taak = 0; taak < taken.length; taak++) {
-      if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
+      if (hasDuplicates(getName(listAll('true', true, taken[taak])))) {
+        needCheck = true
+        randomForTask(taken[taak])
+      }
+    }
+    if (needCheck == true) {
+      fixRandomGenAfterTasks()
+    }
+  }
+
+  function fixRandomGenAfterTasks() {
+    let needCheck = false
+
+    for (let dag = 0; dag < dagen.length; dag++) {
+      if (hasDuplicates(getName(listAll('true', dagen[dag], true)))) {
+        randomForDay(dagen[dag])
+        needCheck = true
+      }
+    }
+    if (needCheck == true) { fixRandomGenAfterDays() }
+  }
+
+  function SelectByDropdownRun(day, task) {
+    toggleAll(listAll(true, day, task), false)
+    toggleAll(listAll(dagTaakDropdown.value[day + '$' + task], day, task), true)
+  }
+
+  function maakDagTaakDropdDown(dagen, taken) {
+    let temp = {}
+    for (let dag = 0; dag < dagen.length; dag++) {
+      for (let taak = 0; taak < taken.length; taak++) {
+        temp[dagen[dag] + '$' + taken[taak]] = false
+      }
+    }
+    return temp
+  }
+
+
+  function fixSetup() {
+    for (let dag = 0; dag < dagen.length; dag++) {
+      for (let taak = 0; taak < taken.length; taak++) {
         if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
-          dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+          if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
+            dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+          }
         }
       }
     }
   }
-}
-const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.taken))
-if (onlyChecked(listAll(true, true, true)).length == 0) { toggleAll(listAll(true, true, true), true) }
-fixSetup()
-function getSave() {
-  return JSON.stringify({
-    taken: taken,
-    dagen: dagen,
-    bewoners: bewoners,
-    lijst: lijst._rawValue
-  })
-}
-let lastSave = getSave()
+  const dagTaakDropdown = ref(maakDagTaakDropdDown(props.input.dagen, props.input.taken))
+  if (onlyChecked(listAll(true, true, true)).length == 0) { toggleAll(listAll(true, true, true), true) }
+  fixSetup()
+  function getSave() {
+    return JSON.stringify({
+      taken: taken,
+      dagen: dagen,
+      bewoners: bewoners,
+      lijst: lijst._rawValue
+    })
+  }
+  let lastSave = getSave()
 
 </script>
 
@@ -244,10 +354,14 @@ let lastSave = getSave()
       <option value="opties">Taken Opties</option>
       <option value="planner">Taken Lijst</option>
     </select>
-    <button @click="saveToFile()" v-if="show == 'opties'" class="btn btn-neutral no-animation join-item select-bordered ">Exporteer
+    <!-- <input v-model="search" type="text" v-if="show == 'planner'" placeholder="Tekst highlighten"
+      class="join-item input input-bordered w-full max-w-xs" /> -->
+    <button @click="saveToFile()" v-if="show == 'opties'"
+      class="btn btn-neutral no-animation join-item select-bordered ">Exporteer
       opties</button>
     <button v-if="show == 'planner'" onclick="window.print()"
       class="btn btn-neutral no-animation join-item select-bordered ">Printen</button>
+
   </div>
 
 
@@ -304,12 +418,14 @@ let lastSave = getSave()
                   v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
                   @click="toggleAll(listAll(true, dag, taak), true)"
                   class="btn btn-neutral no-animation join-item btn-xs">Iedereen</button>
-                <button v-else disabled class="cursor-not-allowed	btn btn-neutral no-animation join-item btn-xs ">Iedereen</button>
+                <button v-else disabled
+                  class="cursor-not-allowed	btn btn-neutral no-animation join-item btn-xs ">Iedereen</button>
                 <button
                   v-if="(onlyChecked(listAll(true, dag, taak)).length > 0) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
                   @click="toggleAll(listAll(true, dag, taak), false)"
                   class="btn btn-neutral no-animation join-item btn-xs	">Niemand</button>
-                <button v-else disabled class="cursor-not-allowed btn btn-neutral no-animation join-item btn-xs 		">Niemand</button>
+                <button v-else disabled
+                  class="cursor-not-allowed btn btn-neutral no-animation join-item btn-xs 		">Niemand</button>
               </div>
               <div class="join grid grid-cols-1">
                 <button v-if="lijst.niet['niet$' + dag + '$' + taak] == false" @click="blokeren(dag, taak, true)"
@@ -361,7 +477,7 @@ let lastSave = getSave()
     </div>
   </div>
   <div v-if="show == 'planner'" class="overflow-x-auto">
-    <div class="print:hidden fixed bottom-5 right-5 w-full max-w-fit z-50 ">
+    <div class="print:hidden fixed bottom-1 right-1 w-full max-w-fit z-50 ">
       <button @click="randomForWeek()" class="btn btn-neutral no-animation btn-outline btn-xl btn-circle">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-max w-max" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
@@ -373,48 +489,80 @@ let lastSave = getSave()
           </g>
         </svg>
       </button>
+      <!-- <button @click="randomForWeek2()" class="btn btn-primary no-animation btn-outline btn-xl btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-max w-max" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor">
+          <g id="SVGRepo_bgCarrier" stroke-width="0" />
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+          <g id="SVGRepo_iconCarrier">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" />
+          </g>
+        </svg>
+      </button> -->
     </div>
-    <table class="table table-xs table-auto	">
-      <thead>
-        <tr>
-          <th class="border border-content dark:border-neutral print:border-black print:border-2	 ">
-            <select class="select select-bordered  select-xs print:hidden" v-model="dropdown.week">
-              <option v-for="week in generateWeeknumbers()" :value=week>{{ week }} </option>
-            </select>
-            <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
-          </th>
-          <th
-            class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 "
-            v-for="dag in dagen"> {{ dag.replace(/_/g, ' ') }} <button @click="randomForDay(dag)"
-              class="btn btn-neutral no-animation btn-xs btn-circle btn-outline print:hidden">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                <g id="SVGRepo_iconCarrier">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" />
-                </g>
-              </svg>
-            </button></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="taak in taken ">
-          <th
-            class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2 max-w-36 print:max-w-full">
-            {{ taak.replace(/_/g, ' ') }}
-          </th>
+    <WordHighlighter :query=search>
+      <table class="table table-xs table-auto	">
+        <thead>
+          <tr>
+            <th class="border border-content dark:border-neutral print:border-black print:border-2	 ">
+              <select class="select select-bordered  select-xs print:hidden" v-model="dropdown.week">
+                <option v-for="week in generateWeeknumbers()" :value=week>{{ week }} </option>
+              </select>
+              <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
+            </th>
+            <th
+              class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 "
+              v-for="dag in dagen"> {{ dag.replace(/_/g, ' ') }} <button @click="randomForDay(dag)"
+                class="btn btn-neutral no-animation btn-xs btn-circle btn-outline print:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                  <g id="SVGRepo_iconCarrier">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" />
+                  </g>
+                </svg>
+              </button></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="taak in taken ">
+            <th
+              class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2 max-w-36 print:max-w-full">
+              <button @click="randomForTask(taak)"
+                class="btn btn-neutral no-animation btn-xs btn-circle btn-outline print:hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor">
+                  <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                  <g id="SVGRepo_iconCarrier">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" />
+                  </g>
+                </svg>
+              </button>{{ taak.replace(/_/g, ' ') }}
+            </th>
 
-          <td class="border border-content dark:border-neutral print:border-black print:border-2" v-for="dag in dagen">
-            <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" type="text" value="✕"
-              class="w-full bg-transparent	" />
-            <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false" type="text"
-              :value="(choise['true$' + dag + '$' + taak])" class="w-full bg-transparent	" />
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td class="border border-content dark:border-neutral print:border-black print:border-2"
+              v-for="dag in dagen">
+              <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" type="text" value="✕"
+                class="w-full bg-transparent	" />
+              <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false" type="text"
+                :value="(choise['true$' + dag + '$' + taak])" class="w-full bg-transparent	" />
+              <!-- <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false" type="text"
+                  v-model="choise['true' + '$' + dag + '$' + taak]"
+                  class="input  input-xs w-full input-bordered input-primary" />  -->
+              <!-- {{ choise['true' + '$' + dag + '$' + taak] }}  -->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </WordHighlighter>
+
   </div>
+
   <div class="h-screen print:hidden"></div>
 </template>
