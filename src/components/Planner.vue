@@ -194,6 +194,7 @@ function randomGen() {
     }
   }
   let leeg = []
+  let disabledLijst = onlyChecked(listAll('niet', true, true))
   for (let i = 0; i < invulLijst.length; i++) {
     if (choise.value['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] == undefined) { leeg.push('true$' + invulLijst[i].dag + '$' + invulLijst[i].taak) }
   }
@@ -218,7 +219,9 @@ function randomGen() {
       maxTasks.push(temp)
     }
   }
-  let maxEmpty = (((maxTasks.length * maxDays.length) - ((maxTasks.length * maxDays.length) / bewoners.length * maxBewoners.length)))- leeg.length
+  // wanneer er meer taken dan bewoners zijn, dan gaat het niet goed
+  // wanneer er meer dagen zijn dan bewoners, dan gaat het niet goed
+  let maxEmpty = (((maxTasks.length * maxDays.length) - ((maxTasks.length * maxDays.length) / bewoners.length * maxBewoners.length))) - (leeg.length - disabledLijst.length)
   if (maxEmpty !== 0) { console.log("opnieuw proberen, takenrooster kan beter"); randomGen() }
   else { console.log("sucess, takenrooster goed") }
 }
