@@ -103,11 +103,11 @@ function onlyChecked(list) {
 
 }
 
-function onlyChosen(list) {
+function onlyChosen(list, variable) {
   let temp = [];
   for (let i = 0; i < list.length; i++) {
     let temp2 = getArray(list[i])
-    if (choise.value['true$' + temp2.dag + '$' + temp2.taak] == temp2.bewoner) { temp.push(temp2.bewoner + '$' + temp2.dag + '$' + temp2.taak) }
+    if (variable['true$' + temp2.dag + '$' + temp2.taak] == temp2.bewoner) { temp.push(temp2.bewoner + '$' + temp2.dag + '$' + temp2.taak) }
   }
   return temp
 
@@ -171,8 +171,18 @@ function chosenOneLijst(bewoners, dagen, taken) {
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
 
+
+function randomGenTry(max) {
+  let temp = []
+  for (let i = 0; i < max; i++) {
+    temp.push(randomGen())
+  }
+  temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
+  choise.value = temp[0].result
+}
+
 function randomGen() {
-  choise.value = []
+  let tempChoise = []
   let invulLijst = []
   for (let taak = 0; taak < taken.length; taak++) {
     for (let dag = 0; dag < dagen.length; dag++) {
@@ -188,42 +198,16 @@ function randomGen() {
   for (let i = 0; i < invulLijst.length; i++) {
     let ii = 0
     for (ii = 0; ii < invulLijst[i].size + 1; ii++) {
-      choise.value['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] = invulLijst[i].opties[ii]
-      if (onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], invulLijst[i].dag, true))).length == 1 && onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], true, invulLijst[i].taak))).length == 1) { break }
-
+      tempChoise['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] = invulLijst[i].opties[ii]
+      if (onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], invulLijst[i].dag, true)), tempChoise).length == 1 && onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], true, invulLijst[i].taak)), tempChoise).length == 1) { break }
     }
   }
   let leeg = []
   let disabledLijst = onlyChecked(listAll('niet', true, true))
   for (let i = 0; i < invulLijst.length; i++) {
-    if (choise.value['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] == undefined) { leeg.push('true$' + invulLijst[i].dag + '$' + invulLijst[i].taak) }
+    if (tempChoise['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] == undefined) { leeg.push('true$' + invulLijst[i].dag + '$' + invulLijst[i].taak) }
   }
-  let maxBewoners = []
-  for (let i = 0; i < bewoners.length; i++) {
-    let temp = onlyChecked(listAll(bewoners[i], true, true))
-    if (temp.length !== 0) {
-      maxBewoners.push(temp)
-    }
-  }
-  let maxDays = []
-  for (let i = 0; i < dagen.length; i++) {
-    let temp = onlyChecked(listAll(true, dagen[i], true))
-    if (temp.length !== 0) {
-      maxDays.push(temp)
-    }
-  }
-  let maxTasks = []
-  for (let i = 0; i < taken.length; i++) {
-    let temp = onlyChecked(listAll(true, true, taken[i]))
-    if (temp.length !== 0) {
-      maxTasks.push(temp)
-    }
-  }
-  // wanneer er meer taken dan bewoners zijn, dan gaat het niet goed
-  // wanneer er meer dagen zijn dan bewoners, dan gaat het niet goed
-  let maxEmpty = (((maxTasks.length * maxDays.length) - ((maxTasks.length * maxDays.length) / bewoners.length * maxBewoners.length))) - (leeg.length - disabledLijst.length)
-  if (maxEmpty !== 0) { console.log("opnieuw proberen, takenrooster kan beter"); randomGen() }
-  else { console.log("sucess, takenrooster goed") }
+  return { result: tempChoise, leeg: leeg.length }
 }
 
 
@@ -413,11 +397,11 @@ let lastSave = getSave()
       </div>
       <div class="flex justify-end join">
         <div class="w-full join-item ">
-          <button class="btn btn-neutral no-animation w-full join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
+          <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
           ">Aanvinken</button>
         </div>
         <div class="w-full">
-          <button class="btn btn-neutral no-animation w-full join-item select-bordered "
+          <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered "
             @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), false)">Uitvinken</button>
         </div>
       </div>
@@ -425,7 +409,7 @@ let lastSave = getSave()
   </div>
   <div v-if="show == 'planner'" class="overflow-x-auto">
     <div class="print:hidden fixed bottom-1 right-1 w-full max-w-fit z-50 ">
-      <button @click="randomGen()" class="btn btn-neutral no-animation btn-outline btn-xl btn-circle">
+      <button @click="randomGenTry(100)" class="btn btn-neutral no-animation btn-outline btn-xl btn-circle">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-max w-max" fill="none" viewBox="0 0 24 24"
           stroke="currentColor">
           <g id="SVGRepo_bgCarrier" stroke-width="0" />
