@@ -1,5 +1,5 @@
 <script setup>
-let version = '2.1.1'
+let version = '2.1.2'
 import { ref } from 'vue';
 import planner from './components/Planner.vue'
 import reloadPrompt from './components/ReloadPrompt.vue'
@@ -144,7 +144,6 @@ var fileName = new Date().toLocaleDateString()
       </div>
     </div>
   </div>
-  <planner v-if="show" :input="input" />
   <footer v-if="!show && !inputEdit" class="footer items-center p-4 bg-neutral text-neutral-content">
   <aside class="items-center grid-flow-col">
     <div class="avatar">
@@ -159,4 +158,5 @@ var fileName = new Date().toLocaleDateString()
     </a>
   </nav>
 </footer>
+<planner v-if="show" :input="input" />
 </template>

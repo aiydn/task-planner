@@ -170,7 +170,7 @@ function chosenOneLijst(bewoners, dagen, taken) {
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
 
-let choiseEmpty =  ref(choiseListTemp)
+let choiseEmpty = ref(choiseListTemp)
 
 function randomGenTry(max) {
   let temp = []
@@ -255,62 +255,59 @@ function getSave() {
   })
 }
 let lastSave = getSave()
-function currentModeDatatip(){
+function currentModeDatatip() {
   if (show.value == false) {
     return 'Bekijken'
-}
-else if (show.value == true) {
+  }
+  else if (show.value == true) {
     return 'Taken Rooster'
-}
+  }
 }
 
-function printer(){
-  if (choise._rawValue == choiseEmpty._rawValue){randomGenTry(100); setTimeout(function() { window.print() }, 1000);
-}
+function printer() {
+  if (choise._rawValue == choiseEmpty._rawValue) {
+    randomGenTry(100); setTimeout(function () { window.print() }, 1000);
+  }
   else {
-      window.print()}
+    window.print()
+  }
 }
 </script>
 
 <template>
   <dialog id="quickToggle" class="modal">
-    <div class="fixed  bottom-1 left-1 ">
-      <div class="">
-        <div class="flex justify-end join	">
-          <div class="shrink join-item">
-            <select
-              class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered "
-              v-model="dropdown.bewoner">
-              <option selected :value=true>Alle bewoners</option>
-              <option v-for="bewoner in bewoners" :value=bewoner>{{ bewoner.replace(/_/g, ' ') }}</option>
-            </select>
-          </div>
-          <div class="shrink join-item">
-            <select class="text-balance max-w-36 print:max-w-full line-clamp-2 text-xs join-item select select-bordered"
-              v-model="dropdown.dag">
-              <option selected :value=true>Alle Dagen</option>
-              <option v-for="dag in dagen" :value=dag>{{ dag.replace(/_/g, ' ') }}</option>
-            </select>
-          </div>
-          <div class="shrink join-item">
-            <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered"
-              v-model="dropdown.taak">
-              <option selected :value=true>Alle Taken</option>
-              <option v-for="taak in taken" :value=taak>{{ taak.replace(/_/g, ' ') }}</option>
-            </select>
-          </div>
+    <div class="fixed bottom-1 left-1 ">
+      <div class="flex justify-end join	">
+        <div class="shrink join-item">
+          <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered "
+            v-model="dropdown.bewoner">
+            <option selected :value=true>Alle bewoners</option>
+            <option v-for="bewoner in bewoners" :value=bewoner>{{ bewoner.replace(/_/g, ' ') }}</option>
+          </select>
+        </div>
+        <div class="shrink join-item">
+          <select class="text-balance max-w-36 print:max-w-full line-clamp-2 text-xs join-item select select-bordered"
+            v-model="dropdown.dag">
+            <option selected :value=true>Alle Dagen</option>
+            <option v-for="dag in dagen" :value=dag>{{ dag.replace(/_/g, ' ') }}</option>
+          </select>
+        </div>
+        <div class="shrink join-item">
+          <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered"
+            v-model="dropdown.taak">
+            <option selected :value=true>Alle Taken</option>
+            <option v-for="taak in taken" :value=taak>{{ taak.replace(/_/g, ' ') }}</option>
+          </select>
         </div>
       </div>
-      <div class="">
-        <div class=" flex justify-end join">
-          <div class="w-full ">
-            <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
+      <div class=" flex justify-end join">
+        <div class="w-full ">
+          <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
           ">Aanvinken</button>
-          </div>
-          <div class="w-full">
-            <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered "
-              @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), false)">Uitvinken</button>
-          </div>
+        </div>
+        <div class="w-full">
+          <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered "
+            @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), false)">Uitvinken</button>
         </div>
       </div>
     </div>
@@ -519,147 +516,148 @@ function printer(){
 
 
   </div>
-
-  <div :class="show ? 'hidden print:hidden' : 'print:hidden'">
-    <table class="table table-xs table-auto	">
-      <thead>
-        <tr>
-          <th class="border border-content dark:border-neutral print:border-black print:border-2	"><select
-              class="print:hidden select select-bordered  select-xs" v-model="dropdown.week">
-              <option v-for="week in generateWeeknumbers()" :value=week>{{ week }}</option>
-            </select>
-            <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
-          </th>
-          <th v-for="dag in dagen"
-            class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 ">
-            {{ dag.replace(/_/g, ' ') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="taak in taken ">
-          <th
-            class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2	 max-w-36">
-            {{ taak.replace(/_/g, ' ') }}
-          </th>
-          <td v-for="dag in dagen" class="border border-content dark:border-neutral print:border-black print:border-2	">
-            <div class="w-full space-y-1">
-              <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false" v-model="dagTaakDropdown[dag + '$' + taak]"
-                @change="SelectByDropdownRun(dag, taak)" class="select select-primary w-full select-xs">
-                <option :value=false>Meerdere keuzes</option>
-                <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
+  <div class="overflow-x-hidden	">
+    <div :class="show ? 'hidden print:hidden' : 'print:hidden'">
+      <table class="table table-xs table-auto	">
+        <thead>
+          <tr>
+            <th class="border border-content dark:border-neutral print:border-black print:border-2	"><select
+                class="print:hidden select select-bordered  select-xs" v-model="dropdown.week">
+                <option v-for="week in generateWeeknumbers()" :value=week>{{ week }}</option>
               </select>
-              <select disabled v-if="lijst.niet['niet$' + dag + '$' + taak] == true"
-                class="select select-primary w-full select-xs ">
-                <option>Taak staat uit</option>
-              </select>
-              <div
-                v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
-                class="columns-2 ">
-                <fieldset v-for="bewoner in bewoners">
-                  <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
-                    v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
-                    class="checkbox no-animation checkbox-xs checkbox-primary" :name="bewoner"
-                    :id="bewoner + '$' + dag + '$' + taak">
-                  <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled indeterminate
-                    v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
-                    class="checkbox no-animation checkbox-xs" :name="bewoner" :id="bewoner + '$' + dag + '$' + taak">
-                  <label :for="bewoner + '$' + dag + '$' + taak">{{ bewoner.replace(/_/g, ' ') }}</label>
-                </fieldset>
-              </div>
-              <div v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
-                class="join grid grid-cols-2 w-full">
-                
-                <div class="tooltip  tooltip-bottom"
-                  v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
-                  data-tip="Zet alle vakjes aan">
-                  <button
-                    v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
-                    @click="toggleAll(listAll(true, dag, taak), true)"
-                    class="btn btn-neutral no-animation btn-xs">Iedereen</button>
-                </div>
-                
-                <div v-else-if=" (lijst.niet['niet$' + dag + '$' + taak] == true)"  class="tooltip  tooltip-bottom" data-tip="Taak staat uit">
-                  <button disabled
-                    class="cursor-not-allowed	btn btn-neutral no-animation btn-xs ">Iedereen</button>
-                </div>
-
-                <div v-else class="tooltip  tooltip-bottom" data-tip="Alle vakjes staan aan">
-                  <button disabled
-                    class="cursor-not-allowed	btn btn-neutral no-animation btn-xs ">Iedereen</button>
-                </div>
-                
+              <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
+            </th>
+            <th v-for="dag in dagen"
+              class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 ">
+              {{ dag.replace(/_/g, ' ') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="taak in taken ">
+            <th
+              class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2	 max-w-36">
+              {{ taak.replace(/_/g, ' ') }}
+            </th>
+            <td v-for="dag in dagen"
+              class="border border-content dark:border-neutral print:border-black print:border-2	">
+              <div class="w-full space-y-1">
+                <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
+                  v-model="dagTaakDropdown[dag + '$' + taak]" @change="SelectByDropdownRun(dag, taak)"
+                  class="select select-primary w-full select-xs">
+                  <option :value=false>Meerdere keuzes</option>
+                  <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
+                </select>
+                <select disabled v-if="lijst.niet['niet$' + dag + '$' + taak] == true"
+                  class="select select-primary w-full select-xs ">
+                  <option>Taak staat uit</option>
+                </select>
                 <div
-                  v-if="(onlyChecked(listAll(true, dag, taak)).length > 0) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
-                  class="tooltip  tooltip-bottom" data-tip="Zet alle vakjes uit">
-                  <button @click="toggleAll(listAll(true, dag, taak), false)"
-                    class="btn btn-neutral no-animation btn-xs	">Niemand
-                  </button>
+                  v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
+                  class="columns-2 ">
+                  <fieldset v-for="bewoner in bewoners">
+                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
+                      v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
+                      class="checkbox no-animation checkbox-xs checkbox-primary" :name="bewoner"
+                      :id="bewoner + '$' + dag + '$' + taak">
+                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled indeterminate
+                      v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
+                      class="checkbox no-animation checkbox-xs" :name="bewoner" :id="bewoner + '$' + dag + '$' + taak">
+                    <label :for="bewoner + '$' + dag + '$' + taak">{{ bewoner.replace(/_/g, ' ') }}</label>
+                  </fieldset>
                 </div>
-                
-                <div v-else-if=" (lijst.niet['niet$' + dag + '$' + taak] == true)" class="tooltip  tooltip-bottom" data-tip="Taak staat uit">
-                  <button disabled
-                    class="cursor-not-allowed btn btn-neutral no-animation btn-xs 		">Niemand</button>
-                </div>
+                <div
+                  v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
+                  class="join grid grid-cols-2 w-full">
 
-                <div v-else class="tooltip  tooltip-bottom" data-tip="Alle vakjes staan uit">
-                  <button disabled
-                    class="cursor-not-allowed btn btn-neutral no-animation btn-xs 		">Niemand</button>
-                </div>
+                  <div class="tooltip  tooltip-bottom"
+                    v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
+                    data-tip="Zet alle vakjes aan">
+                    <button
+                      v-if="(onlyChecked(listAll(true, dag, taak)).length < bewoners.length) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
+                      @click="toggleAll(listAll(true, dag, taak), true)"
+                      class="btn btn-neutral no-animation btn-xs">Iedereen</button>
+                  </div>
 
+                  <div v-else-if="(lijst.niet['niet$' + dag + '$' + taak] == true)" class="tooltip  tooltip-bottom"
+                    data-tip="Taak staat uit">
+                    <button disabled class="cursor-not-allowed	btn btn-neutral no-animation btn-xs ">Iedereen</button>
+                  </div>
+
+                  <div v-else class="tooltip  tooltip-bottom" data-tip="Alle vakjes staan aan">
+                    <button disabled class="cursor-not-allowed	btn btn-neutral no-animation btn-xs ">Iedereen</button>
+                  </div>
+
+                  <div
+                    v-if="(onlyChecked(listAll(true, dag, taak)).length > 0) && (lijst.niet['niet$' + dag + '$' + taak] == false)"
+                    class="tooltip  tooltip-bottom" data-tip="Zet alle vakjes uit">
+                    <button @click="toggleAll(listAll(true, dag, taak), false)"
+                      class="btn btn-neutral no-animation btn-xs	">Niemand
+                    </button>
+                  </div>
+
+                  <div v-else-if="(lijst.niet['niet$' + dag + '$' + taak] == true)" class="tooltip  tooltip-bottom"
+                    data-tip="Taak staat uit">
+                    <button disabled class="cursor-not-allowed btn btn-neutral no-animation btn-xs 		">Niemand</button>
+                  </div>
+
+                  <div v-else class="tooltip  tooltip-bottom" data-tip="Alle vakjes staan uit">
+                    <button disabled class="cursor-not-allowed btn btn-neutral no-animation btn-xs 		">Niemand</button>
+                  </div>
+
+                </div>
+                <div class="join grid grid-cols-1">
+                  <div class="tooltip tooltip-bottom	" data-tip="Zet een ✕ in de tabel voor deze taak">
+                    <button v-if="lijst.niet['niet$' + dag + '$' + taak] == false" @click="blokeren(dag, taak, true)"
+                      class="btn btn-neutral no-animation btn-xs">Taak uitzetten</button>
+                  </div>
+                  <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Blokeren</button> -->
+                  <div class="tooltip tooltip-bottom	" data-tip="Verwijder de ✕ uit de tabel voor deze taak">
+                    <button v-if="lijst.niet['niet$' + dag + '$' + taak] == true" @click="blokeren(dag, taak, false)"
+                      class="btn btn-neutral no-animation btn-xs">Taak aanzetten</button>
+                  </div>
+                  <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Deblokeren</button> -->
+                </div>
               </div>
-              <div class="join grid grid-cols-1">
-                <div class="tooltip tooltip-bottom	" data-tip="Zet een ✕ in de tabel voor deze taak">
-                  <button v-if="lijst.niet['niet$' + dag + '$' + taak] == false" @click="blokeren(dag, taak, true)"
-                    class="btn btn-neutral no-animation btn-xs">Taak uitzetten</button>
-                </div>
-                <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Blokeren</button> -->
-                <div class="tooltip tooltip-bottom	" data-tip="Verwijder de ✕ uit de tabel voor deze taak">
-                  <button v-if="lijst.niet['niet$' + dag + '$' + taak] == true" @click="blokeren(dag, taak, false)"
-                    class="btn btn-neutral no-animation btn-xs">Taak aanzetten</button>
-                </div>
-                <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Deblokeren</button> -->
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <div :class="!show ? 'hidden print:block' : ''">
-    <table class="table table-xs table-auto	">
-      <thead>
-        <tr>
-          <th class="border border-content dark:border-neutral print:border-black print:border-2	"><select
-              class="print:hidden select select-bordered  select-xs" v-model="dropdown.week">
-              <option v-for="week in generateWeeknumbers()" :value=week>{{ week }}</option>
-            </select>
-            <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
-          </th>
-          <th v-for="dag in dagen"
-            class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 ">
-            {{ dag.replace(/_/g, ' ') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="taak in taken ">
-          <th
-            class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2 max-w-36 print:max-w-full">
-            {{ taak.replace(/_/g, ' ') }}
-          </th>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div :class="!show ? 'hidden print:block' : ''">
+      <table class="table table-xs table-auto">
+        <thead>
+          <tr>
+            <th class="border border-content dark:border-neutral print:border-black print:border-2	"><select
+                class="print:hidden select select-bordered  select-xs" v-model="dropdown.week">
+                <option v-for="week in generateWeeknumbers()" :value=week>{{ week }}</option>
+              </select>
+              <d class="hidden text-lg print:text-black print:block">{{ dropdown.week }}</d>
+            </th>
+            <th v-for="dag in dagen"
+              class="text-lg print:text-black border border-content dark:border-neutral print:border-black print:border-2	 ">
+              {{ dag.replace(/_/g, ' ') }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="taak in taken ">
+            <th
+              class="text-mg text-wrap border border-content dark:border-neutral print:border-black print:border-2	 max-w-36 print:max-w-full">
+              {{ taak.replace(/_/g, ' ') }}
+            </th>
 
-          <td class="border border-content dark:border-neutral print:border-black print:border-2" v-for="dag in dagen">
-            <d v-if="lijst.niet['niet$' + dag + '$' + taak] == true">✕</d>
-            <!-- <d v-else-if="choise['true$' + dag + '$' + taak] == undefined">Begleiding</d> -->
-            <d v-if="lijst.niet['niet$' + dag + '$' + taak] == false"> {{ choise['true' + '$' + dag + '$' + taak] }}
-            </d>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="print:hidden">
-    <button @click="show = false" class="btn btn-circle join-item  select-bordered invisible">
+            <td class="border border-content dark:border-neutral print:border-black print:border-2"
+              v-for="dag in dagen">
+              <d v-if="lijst.niet['niet$' + dag + '$' + taak] == true">✕</d>
+              <d v-if="lijst.niet['niet$' + dag + '$' + taak] == false"> {{ choise['true' + '$' + dag + '$' + taak] }}
+              </d>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="print:hidden">
+      <button @click="show = false" class="btn btn-circle join-item  select-bordered invisible">
       </button>
+    </div>
   </div>
 </template>
