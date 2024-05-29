@@ -628,7 +628,7 @@ function printer() {
         </tbody>
       </table>
     </div>
-    <div :class="!show ? 'hidden print:h-screen print:flex print:items-center' : ' print:h-screen print:flex print:flexitems-center'">
+    <div :class="!show ? 'hidden print:h-screen print:flex print:items-center' : ' print:h-screen print:flex print:items-center'">
       <table class="table table-xs table-auto">
         <thead>
           <tr>
