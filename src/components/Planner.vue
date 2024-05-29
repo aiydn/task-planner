@@ -3,18 +3,26 @@ import { ref } from 'vue';
 var props = defineProps({
   input: Object
 })
+let changed = true
 let taken = props.input.taken;
 let dagen = props.input.dagen;
 let bewoners = props.input.bewoners;
+const progress = ref(0);
 const lijst = ref(props.input.lijst)
-const lastLijst = ref(props.input.lijst)
 const show = ref(false)
 window.onbeforeunload = function () {
   if (lastSave !== getSave()) {
     return 'Wijzigingen zijn *niet* opgeslagen!';
   }
 };
+function randomGenCheck() {
+  if (changed == true) {
+      randomGenTry()  }
+      else {
+        show.value = true
 
+      }
+}
 
 function getNumberOfWeek() {
   const today = new Date();
@@ -61,8 +69,8 @@ function listAll(a, b, c) {
   }
   return temp
 }
-
 function blokeren(dag, taak, state) {
+  changed = true
   toggleAll(listAll(true, dag, taak), false)
   lijst.value.niet['niet$' + dag + '$' + taak] = state
   dagTaakDropdown.value[dag + '$' + taak] = false;
@@ -75,6 +83,7 @@ function toggle(id, state) {
     lijst.value[id] = state
 }
 function toggleAll(list, state) {
+  changed = true
   for (const item of list) {
     toggle((item), state)
   }
@@ -157,10 +166,10 @@ function chosenOneLijst(bewoners, dagen, taken) {
 }
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
-let choiseEmpty = ref(choiseListTemp)
-const progress = ref(0);
+const choiseEmpty = ref(choiseListTemp)
 function randomGenTry() {
   if (progress.value == 0) {
+    changed = false
     let max = 500
     let temp = []
     setTimeout(() => {
@@ -175,6 +184,7 @@ function randomGenTry() {
 
     }
     setTimeout(() => {
+      show.value = true
       progress.value = 100
       temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
       choise.value = temp[0].result
@@ -253,11 +263,12 @@ let lastSave = getSave()
 
 function printer() {
   if (progress.value == 0) {
-  if ((choise._rawValue == choiseEmpty._rawValue) || (lijst._rawValue !== lastLijst._rawValue)) {
+    if ((choise._rawValue == choiseEmpty._rawValue)||(changed == true)){
     randomGenTry(); setTimeout(function () { window.print() }, 1000);
     lastLijst = lijst
   }
   else {
+    show.value = true
     window.print()
   }
 }
@@ -293,7 +304,7 @@ function printer() {
           </select>
         </div>
       </div>
-      <div class=" flex justify-end join">
+      <div class="flex justify-end join">
         <div class="w-full ">
           <button class="btn btn-neutral no-animation w-full select-sm join-item select-bordered " @click="toggleAll(checkForDropdown(listAll(dropdown.bewoner, dropdown.dag, dropdown.taak)), true);
           ">Aanvinken</button>
@@ -372,7 +383,7 @@ function printer() {
       </button>
     </div>
     <div class="tooltip" data-tip="Bekijken">
-      <button @click="show = true" class="btn btn-circle join-item select-bordered">
+      <button @click="randomGenCheck()" class="btn btn-circle join-item select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 60 60"
           stroke="currentColor">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -458,7 +469,7 @@ function printer() {
       </button>
     </div>
     <div class="tooltip" data-tip="Genereren">
-      <button @click="show = true; randomGenTry()" class="btn btn-circle join-item  select-bordered">
+      <button @click="randomGenTry()" class="btn btn-circle join-item  select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 49.7 49.7">
           <g id="SVGRepo_iconCarrier">
             <g>
@@ -509,7 +520,7 @@ function printer() {
 
 
   </div>
-  <div class="overflow-x-hidden	">
+  <div class="w-11/12 mx-auto print:w-full">
 
     <div :class="show ? 'hidden print:hidden' : 'print:hidden'">
       <table class="table table-xs table-auto	">
@@ -536,7 +547,7 @@ function printer() {
               class="border border-content dark:border-neutral print:border-black print:border-2	">
               <div class="w-full space-y-1">
                 <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
-                  v-model="dagTaakDropdown[dag + '$' + taak]" @change="SelectByDropdownRun(dag, taak)"
+                  v-model="dagTaakDropdown[dag + '$' + taak]" @change="changed = true; SelectByDropdownRun(dag, taak)"
                   class="select select-primary w-full select-xs">
                   <option :value=false>Meerdere keuzes</option>
                   <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
@@ -549,12 +560,12 @@ function printer() {
                   v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                   class="columns-2 ">
                   <fieldset v-for="bewoner in bewoners">
-                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
+                    <input @change="changed = true" v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
                       v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs checkbox-primary" :name="bewoner"
                       :id="bewoner + '$' + dag + '$' + taak">
-                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled indeterminate
-                      v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
+                    <input @change="changed = true" v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled
+                      indeterminate v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs" :name="bewoner" :id="bewoner + '$' + dag + '$' + taak">
                     <label :for="bewoner + '$' + dag + '$' + taak">{{ bewoner.replace(/_/g, ' ') }}</label>
                   </fieldset>
@@ -650,7 +661,7 @@ function printer() {
       </table>
     </div>
     <div class="print:hidden">
-      <button @click="show = false" class="btn btn-circle join-item  select-bordered invisible">
+      <button class="m-2 btn btn-xl invisible">
       </button>
     </div>
   </div>
