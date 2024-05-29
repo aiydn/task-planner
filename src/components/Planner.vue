@@ -169,16 +169,36 @@ function chosenOneLijst(bewoners, dagen, taken) {
 }
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
-
+let randomGenTryRunning = false
 let choiseEmpty = ref(choiseListTemp)
-
-function randomGenTry(max) {
+const progress  = ref(0);
+function randomGenTry() {
+  if (randomGenTryRunning == true){}
+  else {
+  randomGenTryRunning = true
+  let max = 500
   let temp = []
+  setTimeout(() => {
+    progress.value=1
+}, 0);
+  
   for (let i = 0; i < max; i++) {
+    setTimeout(() => {
+      if (i % 1 == 0) { progress.value=Math.ceil(100/max*i)}
     temp.push(randomGen())
+}, 0);
+    
   }
+  setTimeout(() => {
+  progress.value=100
   temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
   choise.value = temp[0].result
+}, 0);
+setTimeout(() => {
+  progress.value=0
+  randomGenTryRunning = false
+}, 0);
+  }
 }
 
 function randomGen() {
@@ -210,10 +230,6 @@ function randomGen() {
   return { result: tempChoise, leeg: leeg.length }
 }
 
-
-function hasDuplicates(array) {
-  return (new Set(array)).size !== array.length;
-}
 
 
 function SelectByDropdownRun(day, task) {
@@ -255,18 +271,10 @@ function getSave() {
   })
 }
 let lastSave = getSave()
-function currentModeDatatip() {
-  if (show.value == false) {
-    return 'Bekijken'
-  }
-  else if (show.value == true) {
-    return 'Taken Rooster'
-  }
-}
 
 function printer() {
   if (choise._rawValue == choiseEmpty._rawValue) {
-    randomGenTry(100); setTimeout(function () { window.print() }, 1000);
+    randomGenTry(); setTimeout(function () { window.print() }, 1000);
   }
   else {
     window.print()
@@ -275,8 +283,9 @@ function printer() {
 </script>
 
 <template>
+      <progress class="fixed z-50 progress bottom-0 progress-primary w-full" v-if="progress !==0" :value="progress" max="100"></progress>
   <dialog id="quickToggle" class="modal">
-    <div class="fixed bottom-1 left-1 ">
+    <div class="fixed bottom-3 left-3 ">
       <div class="flex justify-end join	">
         <div class="shrink join-item">
           <select class="text-balance max-w-36 print:max-w-full line-clamp-2	text-xs join-item select select-bordered "
@@ -315,8 +324,7 @@ function printer() {
       <button>close</button>
     </form>
   </dialog>
-
-  <div class="fixed bottom-1 left-1 w-full max-w-fit z-50 print:hidden join">
+  <div class="fixed bottom-3 left-3 w-full max-w-fit z-50 print:hidden join">
     <div class="tooltip" data-tip="Opties">
       <button @click="show = false" class="btn btn-circle join-item  select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 60 60"
@@ -466,7 +474,7 @@ function printer() {
       </button>
     </div>
     <div class="tooltip" data-tip="Genereren">
-      <button @click="show = true; randomGenTry(100)" class="btn btn-circle join-item  select-bordered">
+      <button @click="show = true; randomGenTry()" class="btn btn-circle join-item  select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 49.7 49.7">
           <g id="SVGRepo_iconCarrier">
             <g>
@@ -515,8 +523,10 @@ function printer() {
 
 
 
+
   </div>
   <div class="overflow-x-hidden	">
+    
     <div :class="show ? 'hidden print:hidden' : 'print:hidden'">
       <table class="table table-xs table-auto	">
         <thead>
