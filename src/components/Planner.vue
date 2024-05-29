@@ -7,7 +7,7 @@ let taken = props.input.taken;
 let dagen = props.input.dagen;
 let bewoners = props.input.bewoners;
 const lijst = ref(props.input.lijst)
-let lastLijst = lijst._rawValue
+const lastLijst = ref(props.input.lijst)
 const show = ref(false)
 window.onbeforeunload = function () {
   if (lastSave !== getSave()) {
@@ -253,15 +253,16 @@ let lastSave = getSave()
 
 function printer() {
   if (progress.value == 0) {
-  if (choise._rawValue == choiseEmpty._rawValue || lijst._rawValue !== lastLijst) {
+  if (choise._rawValue == choiseEmpty._rawValue || lijst._rawValue !== lastLijst._rawValue) {
     randomGenTry(); setTimeout(function () { window.print() }, 1000);
-    lastLijst = lijst._rawValue
+    lastLijst = lijst
   }
   else {
     window.print()
   }
 }
 }
+
 </script>
 
 <template>
