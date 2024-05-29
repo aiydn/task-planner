@@ -184,7 +184,7 @@ function randomGenTry() {
   
   for (let i = 0; i < max; i++) {
     setTimeout(() => {
-      if (i % 1 == 0) { progress.value=Math.ceil(100/max*i)}
+      if (i % 1 == 0) { progress.value=100/max*i}
     temp.push(randomGen())
 }, 0);
     
