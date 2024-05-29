@@ -1,5 +1,4 @@
 <script setup>
-import { defineComponent } from "vue";
 import { ref } from 'vue';
 var props = defineProps({
   input: Object
@@ -52,10 +51,10 @@ function listAll(a, b, c) {
   if (c == true | c == 'true') { C = taken }
   else if (Array.isArray(c)) { C = c }
   else { C[0] = c }
-  for (let bewoner = 0; bewoner < A.length; bewoner++) {
-    for (let dag = 0; dag < B.length; dag++) {
-      for (let taak = 0; taak < C.length; taak++) {
-        temp.push(A[bewoner] + '$' + B[dag] + '$' + C[taak])
+  for (const bewoner of A) {
+    for (const dag of B) {
+      for (const taak of C) {
+        temp.push(bewoner + '$' + dag + '$' + taak)
       }
     }
   }
@@ -75,27 +74,27 @@ function toggle(id, state) {
     lijst.value[id] = state
 }
 function toggleAll(list, state) {
-  for (let i = 0; i < list.length; i++) {
-    toggle((list[i]), state)
+  for (const item of list) {
+    toggle((item), state)
   }
 }
 
 function checkForDropdown(list) {
   let temp1 = []
-  for (let i = 0; i < list.length; i++) {
-    let temp = getArray(list[i])
-    if (dagTaakDropdown.value[temp.dag + '$' + temp.taak] == false) { temp1.push(list[i]) }
+  for (const item of list) {
+    let temp = getArray(item)
+    if (dagTaakDropdown.value[temp.dag + '$' + temp.taak] == false) { temp1.push(item) }
   }
   return temp1
 }
 function onlyChecked(list) {
   let temp = [];
-  for (let i = 0; i < list.length; i++) {
-    if (lijst.value[list[i]] == true) {
-      temp.push(list[i])
+  for (const item of list) {
+    if (lijst.value[item] == true) {
+      temp.push(item)
     }
-    if (getArray(list[i]).bewoner == 'niet') {
-      if (lijst.value.niet[list[i]] == true) { temp.push(list[i]) }
+    if (getArray(item).bewoner == 'niet') {
+      if (lijst.value.niet[item] == true) { temp.push(item) }
     }
   }
   return temp
@@ -104,8 +103,8 @@ function onlyChecked(list) {
 
 function onlyChosen(list, variable) {
   let temp = [];
-  for (let i = 0; i < list.length; i++) {
-    let temp2 = getArray(list[i])
+  for (const item of list) {
+    let temp2 = getArray(item)
     if (variable['true$' + temp2.dag + '$' + temp2.taak] == temp2.bewoner) { temp.push(temp2.bewoner + '$' + temp2.dag + '$' + temp2.taak) }
   }
   return temp
@@ -120,18 +119,9 @@ function getArray(id) {
   }
 }
 
-function getName(id) {
-  let temp = []
-  for (let i = 0; i < id.length; i++) {
-    temp.push(choise.value[id[i]])
-  }
-  return temp
-}
-
-
 function getAll(list, option) {
   let temp = []
-  for (let i = 0; i < list.length; i++) { temp.push(getArray(list[i])[option]) }
+  for (const item of list) { temp.push(getArray(item)[option]) }
   return temp
 }
 function saveToFile() {
@@ -155,82 +145,71 @@ function saveToFile() {
   }
   else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
 }
-
-const search = ref();
-
 function chosenOneLijst(bewoners, dagen, taken) {
   let temp = {}
-  for (let dag = 0; dag < dagen.length; dag++) {
-    for (let taak = 0; taak < taken.length; taak++) {
-      temp[true + '$' + dagen[dag] + '$' + taken[taak]] = undefined
+  for (const dag of dagen) {
+    for (const taak of taken) {
+      temp[true + '$' + dag + '$' + taak] = undefined
     }
   }
   return temp
 }
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
-let randomGenTryRunning = false
 let choiseEmpty = ref(choiseListTemp)
-const progress  = ref(0);
+const progress = ref(0);
 function randomGenTry() {
-  if (randomGenTryRunning == true){}
-  else {
-  randomGenTryRunning = true
-  let max = 500
-  let temp = []
-  setTimeout(() => {
-    progress.value=1
-}, 0);
-  
-  for (let i = 0; i < max; i++) {
+  if (progress.value == 0) {
+    let max = 500
+    let temp = []
     setTimeout(() => {
-      if (i % 1 == 0) { progress.value=100/max*i}
-    temp.push(randomGen())
-}, 0);
-    
-  }
-  setTimeout(() => {
-  progress.value=100
-  temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
-  choise.value = temp[0].result
-}, 0);
-setTimeout(() => {
-  progress.value=0
-  randomGenTryRunning = false
-}, 0);
+      progress.value = 1
+    }, 0);
+
+    for (let i = 0; i < max; i++) {
+      setTimeout(() => {
+        if (i % 1 == 0) { progress.value = 100 / max * i }
+        temp.push(randomGen())
+      }, 0);
+
+    }
+    setTimeout(() => {
+      progress.value = 100
+      temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
+      choise.value = temp[0].result
+    }, 0);
+    setTimeout(() => {
+      progress.value = 0
+    }, 0);
   }
 }
 
 function randomGen() {
   let tempChoise = []
   let invulLijst = []
-  for (let taak = 0; taak < taken.length; taak++) {
-    for (let dag = 0; dag < dagen.length; dag++) {
+  for (const taak of taken) {
+    for (const dag of dagen) {
       invulLijst.push({
-        taak: taken[taak],
-        dag: dagen[dag],
-        opties: getAll(onlyChecked(listAll(true, dagen[dag], taken[taak])), 'bewoner').sort(function (a, b) { if (a.size == b.size) { return 0.5 - Math.random() } else { return a.size - b.size } }),
-        size: getAll(onlyChecked(listAll(true, dagen[dag], taken[taak])), 'bewoner').length
+        taak: taak,
+        dag: dag,
+        opties: getAll(onlyChecked(listAll(true, dag, taak)), 'bewoner').sort(function (a, b) { if (a.size == b.size) { return 0.5 - Math.random() } else { return a.size - b.size } }),
+        size: getAll(onlyChecked(listAll(true, dag, taak)), 'bewoner').length
       })
     }
   }
   invulLijst.sort(function (a, b) { if (a.size == b.size) { return 0.5 - Math.random() } else { return a.size - b.size } }); //random
-  for (let i = 0; i < invulLijst.length; i++) {
-    let ii = 0
-    for (ii = 0; ii < invulLijst[i].size + 1; ii++) {
-      tempChoise['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] = invulLijst[i].opties[ii]
-      if (onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], invulLijst[i].dag, true)), tempChoise).length == 1 && onlyChosen(onlyChecked(listAll(invulLijst[i].opties[ii], true, invulLijst[i].taak)), tempChoise).length == 1) { break }
+  for (const invulItem of invulLijst) {
+    for (let ii = 0; ii < invulItem.size + 1; ii++) {
+      tempChoise['true$' + invulItem.dag + '$' + invulItem.taak] = invulItem.opties[ii]
+      if (onlyChosen(onlyChecked(listAll(invulItem.opties[ii], invulItem.dag, true)), tempChoise).length == 1 && onlyChosen(onlyChecked(listAll(invulItem.opties[ii], true, invulItem.taak)), tempChoise).length == 1) { break }
     }
   }
   let leeg = []
-  let disabledLijst = onlyChecked(listAll('niet', true, true))
-  for (let i = 0; i < invulLijst.length; i++) {
-    if (tempChoise['true$' + invulLijst[i].dag + '$' + invulLijst[i].taak] == undefined) { leeg.push('true$' + invulLijst[i].dag + '$' + invulLijst[i].taak) }
+  for (const invulItem of invulLijst) {
+    if (tempChoise['true$' + invulItem.dag + '$' + invulItem.taak] == undefined) { leeg.push('true$' + invulItem.dag + '$' + invulItem.taak) }
   }
   return { result: tempChoise, leeg: leeg.length }
 }
-
-
 
 function SelectByDropdownRun(day, task) {
   toggleAll(listAll(true, day, task), false)
@@ -239,21 +218,20 @@ function SelectByDropdownRun(day, task) {
 
 function maakDagTaakDropdDown(dagen, taken) {
   let temp = {}
-  for (let dag = 0; dag < dagen.length; dag++) {
-    for (let taak = 0; taak < taken.length; taak++) {
-      temp[dagen[dag] + '$' + taken[taak]] = false
+  for (const dag of dagen) {
+    for (const taak of taken) {
+      temp[dag + '$' + taak] = false
     }
   }
   return temp
 }
 
-
 function fixSetup() {
-  for (let dag = 0; dag < dagen.length; dag++) {
-    for (let taak = 0; taak < taken.length; taak++) {
-      if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
-        if (onlyChecked(listAll(true, dagen[dag], taken[taak])).length == 1) {
-          dagTaakDropdown.value[dagen[dag] + '$' + taken[taak]] = getArray(onlyChecked(listAll(true, dagen[dag], taken[taak]))[0]).bewoner
+  for (const dag of dagen) {
+    for (const taak of taken) {
+      if (onlyChecked(listAll(true, dag, taak)).length == 1) {
+        if (onlyChecked(listAll(true, dag, taak)).length == 1) {
+          dagTaakDropdown.value[dag + '$' + taak] = getArray(onlyChecked(listAll(true, dag, taak))[0]).bewoner
         }
       }
     }
@@ -273,6 +251,7 @@ function getSave() {
 let lastSave = getSave()
 
 function printer() {
+  if (progress.value == 0) {
   if (choise._rawValue == choiseEmpty._rawValue) {
     randomGenTry(); setTimeout(function () { window.print() }, 1000);
   }
@@ -280,10 +259,12 @@ function printer() {
     window.print()
   }
 }
+}
 </script>
 
 <template>
-      <progress class="fixed z-50 progress bottom-0 progress-primary w-full" v-if="progress !==0" :value="progress" max="100"></progress>
+  <progress class="fixed z-50 progress bottom-0 progress-primary w-full" v-if="progress !== 0" :value="progress"
+    max="100"></progress>
   <dialog id="quickToggle" class="modal">
     <div class="fixed bottom-3 left-3 ">
       <div class="flex justify-end join	">
@@ -526,7 +507,7 @@ function printer() {
 
   </div>
   <div class="overflow-x-hidden	">
-    
+
     <div :class="show ? 'hidden print:hidden' : 'print:hidden'">
       <table class="table table-xs table-auto	">
         <thead>
@@ -633,7 +614,7 @@ function printer() {
         </tbody>
       </table>
     </div>
-    <div :class="!show ? 'hidden print:block' : ''">
+    <div :class="!show ? 'hidden h-screen print:flex items-center' : 'h-screen print:flex items-center'">
       <table class="table table-xs table-auto">
         <thead>
           <tr>
