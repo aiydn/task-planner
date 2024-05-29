@@ -253,7 +253,7 @@ let lastSave = getSave()
 
 function printer() {
   if (progress.value == 0) {
-  if (choise._rawValue == choiseEmpty._rawValue || lijst._rawValue !== lastLijst._rawValue) {
+  if ((choise._rawValue == choiseEmpty._rawValue) || (lijst._rawValue !== lastLijst._rawValue)) {
     randomGenTry(); setTimeout(function () { window.print() }, 1000);
     lastLijst = lijst
   }
