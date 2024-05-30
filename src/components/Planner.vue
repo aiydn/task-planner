@@ -193,7 +193,6 @@ function randomGenTry() {
       choise.value = temp[0].result
     }, 0);
     setTimeout(() => {
-      choiseReturn = temp[0].result
       progress.value = 0
     }, 0);
   }
