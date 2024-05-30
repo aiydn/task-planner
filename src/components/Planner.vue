@@ -644,8 +644,7 @@ function showModal() {
         </tbody>
       </table>
     </div>
-    <div
-      :class="!show ? 'hidden print:h-screen print:flex' : ' print:h-screen print:flex'">
+    <div :class="!show ? 'hidden print:h-screen print:flex' : ' print:h-screen print:flex'">
       <table class="table table-xs table-auto">
         <thead>
           <tr>
@@ -670,7 +669,9 @@ function showModal() {
             <td class="border border-content dark:border-neutral print:border-black print:border-2"
               v-for="dag in dagen">
               <d v-if="lijst.niet['niet$' + dag + '$' + taak] == true">✕</d>
-              <d v-if="lijst.niet['niet$' + dag + '$' + taak] == false"> {{ choise['true' + '$' + dag + '$' + taak] }}
+              <d v-else-if="dagTaakDropdown[dag + '$' + taak] !== false"> {{ dagTaakDropdown[dag + '$' + taak] }} </d>
+              <d v-else-if="lijst.niet['niet$' + dag + '$' + taak] == false"> {{ choise['true' + '$' + dag + '$' + taak]
+                }}
               </d>
             </td>
           </tr>

@@ -1,5 +1,5 @@
 <script setup>
-let version = '2.2.1'
+let version = '2.3.0'
 import { ref } from 'vue';
 import planner from './components/Planner.vue'
 import reloadPrompt from './components/ReloadPrompt.vue'
