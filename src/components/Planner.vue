@@ -645,7 +645,7 @@ function showModal() {
       </table>
     </div>
     <div
-      :class="!show ? 'hidden print:h-screen print:flex print:items-center' : ' print:h-screen print:flex print:items-center'">
+      :class="!show ? 'hidden print:h-screen print:flex' : ' print:h-screen print:flex'">
       <table class="table table-xs table-auto">
         <thead>
           <tr>
