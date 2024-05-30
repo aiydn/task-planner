@@ -16,12 +16,15 @@ window.onbeforeunload = function () {
   }
 };
 function randomGenCheck() {
-  if (changed == true) {
-      randomGenTry()  }
-      else {
-        show.value = true
+  if (progress.value == 0) {
+    if (changed == true) {
+      randomGenTry()
+    }
+    else {
+      show.value = true
 
-      }
+    }
+  }
 }
 
 function getNumberOfWeek() {
@@ -190,6 +193,7 @@ function randomGenTry() {
       choise.value = temp[0].result
     }, 0);
     setTimeout(() => {
+      choiseReturn = temp[0].result
       progress.value = 0
     }, 0);
   }
@@ -263,15 +267,28 @@ let lastSave = getSave()
 
 function printer() {
   if (progress.value == 0) {
-    if ((choise._rawValue == choiseEmpty._rawValue)||(changed == true)){
-    randomGenTry(); setTimeout(function () { window.print() }, 1000);
-    lastLijst = lijst
-  }
-  else {
-    show.value = true
-    window.print()
+    if ((choise._rawValue == choiseEmpty._rawValue) || (changed == true)) {
+      randomGenTry(); setTimeout(function () { window.print() }, 1000);
+      lastLijst = lijst
+    }
+    else {
+      show.value = true
+      window.print()
+    }
   }
 }
+
+function opties() {
+  if (progress.value == 0) {
+    show.value = false
+  }
+}
+
+function showModal() {
+  if (progress.value == 0) {
+    show.value = false
+    quickToggle.showModal()
+  }
 }
 
 </script>
@@ -321,7 +338,7 @@ function printer() {
   </dialog>
   <div class="fixed bottom-3 left-3 w-full max-w-fit z-50 print:hidden join">
     <div class="tooltip" data-tip="Opties">
-      <button @click="show = false" class="btn btn-circle join-item  select-bordered">
+      <button @click="opties()" class="btn btn-circle join-item  select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 60 60"
           stroke="currentColor">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -488,7 +505,7 @@ function printer() {
       </button>
     </div>
     <div class="tooltip" data-tip="Snelle opties">
-      <button @click="show = false" onclick="quickToggle.showModal()" class="btn btn-circle join-item  select-bordered">
+      <button @click="showModal()" class="btn btn-circle join-item  select-bordered">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 60 60">
           <g id="SVGRepo_iconCarrier">
             <g>
@@ -628,7 +645,8 @@ function printer() {
         </tbody>
       </table>
     </div>
-    <div :class="!show ? 'hidden print:h-screen print:flex print:items-center' : ' print:h-screen print:flex print:items-center'">
+    <div
+      :class="!show ? 'hidden print:h-screen print:flex print:items-center' : ' print:h-screen print:flex print:items-center'">
       <table class="table table-xs table-auto">
         <thead>
           <tr>
