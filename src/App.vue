@@ -154,7 +154,7 @@ var fileName = new Date().toLocaleDateString()
     <aside class="items-center grid-flow-col">
       <div class="avatar">
         <div class="w-10 rounded-full">
-          <img src="https://gravatar.com/avatar/34fd758a01e67f3ebf2da9a98eb12c4a3425020279dfeacc0890a5b32b6d51a2?s=200">
+          <img src="https://gravatar.com/avatar/5f7b56bd925a6237df5801c5d2b878760d23744d4e42f5e584b8ac78e0b973f9?s=200">
         </div>
       </div>
       <p>Gemaakt door A.S. © {{ new Date().getFullYear() }} - Versie {{ version }}</p>
