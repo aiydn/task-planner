@@ -3,7 +3,6 @@ import { ref } from 'vue';
 var props = defineProps({
   input: Object
 })
-let changed = true
 let taken = props.input.taken;
 let dagen = props.input.dagen;
 let bewoners = props.input.bewoners;
@@ -17,7 +16,7 @@ window.onbeforeunload = function () {
 };
 function randomGenCheck() {
   if (progress.value == 0) {
-    if (changed == true) {
+    if (lastGenSave !== getSave()) {
       randomGenTry()
     }
     else {
@@ -73,7 +72,6 @@ function listAll(a, b, c) {
   return temp
 }
 function blokeren(dag, taak, state) {
-  changed = true
   toggleAll(listAll(true, dag, taak), false)
   lijst.value.niet['niet$' + dag + '$' + taak] = state
   dagTaakDropdown.value[dag + '$' + taak] = false;
@@ -86,7 +84,6 @@ function toggle(id, state) {
     lijst.value[id] = state
 }
 function toggleAll(list, state) {
-  changed = true
   for (const item of list) {
     toggle((item), state)
   }
@@ -138,6 +135,7 @@ function getAll(list, option) {
   return temp
 }
 function saveToFile() {
+  if (progress.value == 0) {
   if (lastSave !== getSave()) {
     lastSave = getSave()
     let temp = new Date()
@@ -158,6 +156,7 @@ function saveToFile() {
   }
   else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
 }
+}
 function chosenOneLijst(bewoners, dagen, taken) {
   let temp = {}
   for (const dag of dagen) {
@@ -172,8 +171,8 @@ const choise = ref(choiseListTemp)
 const choiseEmpty = ref(choiseListTemp)
 function randomGenTry() {
   if (progress.value == 0) {
-    changed = false
     let max = 500
+    lastGenSave = getSave()
     let temp = []
     setTimeout(() => {
       progress.value = 1
@@ -263,12 +262,12 @@ function getSave() {
   })
 }
 let lastSave = getSave()
-
+let lastGenSave = getSave()
 function printer() {
   if (progress.value == 0) {
-    if ((choise._rawValue == choiseEmpty._rawValue) || (changed == true)) {
+    if ((choise._rawValue == choiseEmpty._rawValue) || (lastGenSave !== getSave())) {
       randomGenTry(); setTimeout(function () { window.print() }, 1000);
-      lastLijst = lijst
+      lastGenSave = getSave()    
     }
     else {
       show.value = true
@@ -563,7 +562,7 @@ function showModal() {
               class="border border-content dark:border-neutral print:border-black print:border-2	">
               <div class="w-full space-y-1">
                 <select v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
-                  v-model="dagTaakDropdown[dag + '$' + taak]" @change="changed = true; SelectByDropdownRun(dag, taak)"
+                  v-model="dagTaakDropdown[dag + '$' + taak]" @change=" SelectByDropdownRun(dag, taak)"
                   class="select select-primary w-full select-xs">
                   <option :value=false>Meerdere keuzes</option>
                   <option v-for="bewoner in bewoners" :value=bewoner>Forceer {{ bewoner.replace(/_/g, ' ') }}</option>
@@ -576,11 +575,11 @@ function showModal() {
                   v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                   class="columns-2 ">
                   <fieldset v-for="bewoner in bewoners">
-                    <input @change="changed = true" v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
+                    <input  v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
                       v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs checkbox-primary" :name="bewoner"
                       :id="bewoner + '$' + dag + '$' + taak">
-                    <input @change="changed = true" v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled
+                    <input  v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled
                       indeterminate v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs" :name="bewoner" :id="bewoner + '$' + dag + '$' + taak">
                     <label :for="bewoner + '$' + dag + '$' + taak">{{ bewoner.replace(/_/g, ' ') }}</label>
