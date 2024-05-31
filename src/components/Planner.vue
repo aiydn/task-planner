@@ -16,7 +16,7 @@ window.onbeforeunload = function () {
 };
 function randomGenCheck() {
   if (progress.value == 0) {
-    if (lastGenSave !== getSave()) {
+    if ((choise._rawValue == choiseEmpty._rawValue) || (lastGenSave !== getSave())) {
       randomGenTry()
     }
     else {
