@@ -11,7 +11,7 @@ const lijst = ref(props.input.lijst)
 const show = ref(false)
 window.onbeforeunload = function () {
   if (lastSave !== getSave()) {
-    return 'Wijzigingen zijn *niet* opgeslagen!';
+    return "";
   }
 };
 function randomGenCheck() {
@@ -21,7 +21,6 @@ function randomGenCheck() {
     }
     else {
       show.value = true
-
     }
   }
 }
@@ -34,9 +33,9 @@ function getNumberOfWeek() {
   // January 4 is always in week 1.
   var week1 = new Date(date.getFullYear(), 0, 4);
   // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-  const number =  1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+  const number = 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+  // Returns the ISO week of the date.
   return "Week " + number;
-
 }
 
 const dropdown = ref({
@@ -48,7 +47,7 @@ const dropdown = ref({
 
 function generateWeeknumbers() {
   let temp = [];
-  for (let i = 1; i <= 53; i++) {
+  for (let i = 1; i <= 52; i++) {
     temp.push("Week " + i)
   }
   return temp
@@ -59,13 +58,12 @@ function listAll(a, b, c) {
   let B = [] //dagen
   let C = [] //taken
   if (a == true) { A = bewoners }
-  else if (a == 'realtrue') { A[1] = 'true' }
   else if (Array.isArray(a)) { A = a }
   else { A[0] = a }
-  if (b == true | b == 'true') { B = dagen }
+  if (b == true) { B = dagen }
   else if (Array.isArray(b)) { B = b }
   else { B[0] = b }
-  if (c == true | c == 'true') { C = taken }
+  if (c == true) { C = taken }
   else if (Array.isArray(c)) { C = c }
   else { C[0] = c }
   for (const bewoner of A) {
@@ -142,26 +140,26 @@ function getAll(list, option) {
 }
 function saveToFile() {
   if (progress.value == 0) {
-  if (lastSave !== getSave()) {
-    lastSave = getSave()
-    let temp = new Date()
+    if (lastSave !== getSave()) {
+      lastSave = getSave()
+      let temp = new Date()
 
-    const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
-    const jsonStr = getSave();
+      const filename = 'Takenlijst opties ' + temp.toLocaleString('nl-NL') + '.json';
+      const jsonStr = getSave();
 
-    let element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
-    element.setAttribute('download', filename);
+      let element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+      element.setAttribute('download', filename);
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
+      element.style.display = 'none';
+      document.body.appendChild(element);
 
-    element.click();
+      element.click();
 
-    document.body.removeChild(element);
+      document.body.removeChild(element);
+    }
+    else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
   }
-  else (window.alert('Geen wijzigingen in de opties gevonden, opslaan niet nodig'))
-}
 }
 function chosenOneLijst(bewoners, dagen, taken) {
   let temp = {}
@@ -172,29 +170,27 @@ function chosenOneLijst(bewoners, dagen, taken) {
   }
   return temp
 }
+
 let choiseListTemp = chosenOneLijst(true, dagen, taken)
 const choise = ref(choiseListTemp)
 const choiseEmpty = ref(choiseListTemp)
 function randomGenTry() {
   if (progress.value == 0) {
-    let max = 500
+    const max = 500
+    const updateAtProcent = 4
     lastGenSave = getSave()
     let temp = []
-    setTimeout(() => {
-      progress.value = 1
-    }, 0);
-
     for (let i = 0; i < max; i++) {
       setTimeout(() => {
-        if (i % 1 == 0) { progress.value = 100 / max * i }
+        if ((100 / max * i) % updateAtProcent == 0) { progress.value = 100 / max * i }
         temp.push(randomGen())
       }, 0);
-
     }
     setTimeout(() => {
       show.value = true
       progress.value = 100
       temp.sort(function (a, b) { if (a.leeg == b.leeg) { return 0.5 - Math.random() } else { return a.leeg - b.leeg } })
+      console.log(temp)
       choise.value = temp[0].result
     }, 0);
     setTimeout(() => {
@@ -273,7 +269,7 @@ function printer() {
   if (progress.value == 0) {
     if ((choise._rawValue == choiseEmpty._rawValue) || (lastGenSave !== getSave())) {
       randomGenTry(); setTimeout(function () { window.print() }, 1000);
-      lastGenSave = getSave()    
+      lastGenSave = getSave()
     }
     else {
       show.value = true
@@ -581,12 +577,12 @@ function showModal() {
                   v-if="onlyChecked(listAll(true, dag, taak)).length !== 1 || dagTaakDropdown[dag + '$' + taak] == false"
                   class="columns-2 ">
                   <fieldset v-for="bewoner in bewoners">
-                    <input  v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
+                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == false"
                       v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs checkbox-primary" :name="bewoner"
                       :id="bewoner + '$' + dag + '$' + taak">
-                    <input  v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled
-                      indeterminate v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
+                    <input v-if="lijst.niet['niet$' + dag + '$' + taak] == true" disabled indeterminate
+                      v-model="lijst[bewoner + '$' + dag + '$' + taak]" type="checkbox"
                       class="checkbox no-animation checkbox-xs" :name="bewoner" :id="bewoner + '$' + dag + '$' + taak">
                     <label :for="bewoner + '$' + dag + '$' + taak">{{ bewoner.replace(/_/g, ' ') }}</label>
                   </fieldset>
@@ -636,12 +632,10 @@ function showModal() {
                     <button v-if="lijst.niet['niet$' + dag + '$' + taak] == false" @click="blokeren(dag, taak, true)"
                       class="btn btn-neutral no-animation btn-xs">Taak uitzetten</button>
                   </div>
-                  <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Blokeren</button> -->
                   <div class="tooltip tooltip-bottom	" data-tip="Verwijder de ✕ uit de tabel voor deze taak">
                     <button v-if="lijst.niet['niet$' + dag + '$' + taak] == true" @click="blokeren(dag, taak, false)"
                       class="btn btn-neutral no-animation btn-xs">Taak aanzetten</button>
                   </div>
-                  <!-- <button v-else disabled class="btn btn-neutral no-animation join-item btn-xs">Deblokeren</button> -->
                 </div>
               </div>
             </td>
